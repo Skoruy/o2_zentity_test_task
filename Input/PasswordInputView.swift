@@ -18,8 +18,13 @@ struct PasswordInputView: View {
     var subtitle: String? = nil
     let placeholder: String
     @Binding var password: String
-    @State private var isPasswordVisible = false
+    var contentType: UITextContentType? = nil
+
     var onValueChanged: ((String?) -> Void)? = nil
+    /// For example for confirm password match
+    var additionalValidation: ((String) -> String?)? = nil
+    
+    @State private var isPasswordVisible = false
     
     // Prefer simple set of rules over some validation regex for more control and easy future changes
     private static let rules: [PasswordRule] = [
@@ -46,9 +51,20 @@ struct PasswordInputView: View {
             disableAutocorrection: true,
             onValueChanged: onValueChanged,
             validation: { newValue in
-                return Self.validatePassword(newValue)
+                var result = Self.validatePassword(newValue)
+                if result == nil, let additionalValidation {
+                    result = additionalValidation(newValue)
+                }
+                return result
+            }) {
+                // Not in task, but with such complex pass rules, I think this will enhance user UX
+                Button {
+                    isPasswordVisible.toggle()
+                } label: {
+                    Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
+                }
+                .padding(.trailing, .xs)
             }
-        )
     }
     
     private static func validatePassword(_ currentPassword: String) -> String? {

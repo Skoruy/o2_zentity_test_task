@@ -55,8 +55,8 @@ private struct ColorLibraryExampleView: View {
                 Text("Surface Colors")
                     .font(.headline)
                 VStack(spacing: 8) {
-                    colorRow(name: "xHigh", color: .surface.xHigh, border: true)
-                    colorRow(name: "xLow", color: .surface.xLow)
+                    colorRow(name: "xHigh", color: .surface.xHigh)
+                    colorRow(name: "xLow", color: .surface.xLow, border: true)
                     colorRow(name: "brand", color: .surface.brand)
                     colorRow(name: "danger", color: .surface.danger)
                     colorRow(name: "dangerVariant", color: .surface.dangerVariant)
@@ -86,7 +86,7 @@ private struct ColorLibraryExampleView: View {
     
     func colorRow(name: String, color: Color, border: Bool = false) -> some View {
         HStack(spacing: 8) {
-            Rectangle().fill(color).border(Color.surface.xLow, width: border ? 1 : 0).frame(width: 44, height: 44)
+            Rectangle().fill(color).border(Color.surface.xHigh, width: border ? 1 : 0).frame(width: 44, height: 44)
             Text(name)
             Spacer()
         }

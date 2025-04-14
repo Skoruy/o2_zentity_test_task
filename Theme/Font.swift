@@ -41,11 +41,11 @@ extension View {
 }
 
 extension FontStyle {
-    private static let interFamily = "Inter"
+    private static let interFont = "Inter"
     
     /// Inter, 16pt, Medium (500), 22pt line height, 0.16 tracking
     static let labelM = FontStyle(
-        name: interFamily,
+        name: interFont,
         size: 16,
         weight: .medium,
         lineHeight: 22,
@@ -54,7 +54,7 @@ extension FontStyle {
     
     /// Inter, 14pt, Semibold (550), 17pt line height, 0.16 tracking
     static let labelS = FontStyle(
-        name: interFamily,
+        name: interFont,
         size: 14,
         weight: .semibold,
         lineHeight: 17,
@@ -63,7 +63,7 @@ extension FontStyle {
     
     /// Inter, 16pt, Regular (400), 22pt line height, 0.01 tracking
     static let bodyM = FontStyle(
-        name: interFamily,
+        name: interFont,
         size: 16,
         weight: .regular,
         lineHeight: 22,

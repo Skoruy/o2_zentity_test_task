@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct InputView: View {
+struct InputView<TrailingContent: View>: View {
     let title: String
     var subtitle: String? = nil
     let placeholder: String
@@ -15,11 +15,72 @@ struct InputView: View {
     var isSecure = false
     var keyboardType: UIKeyboardType = .default
     var autocapitalization: UITextAutocapitalizationType = .none
+    var contentType: UITextContentType? = nil
     var disableAutocorrection = false
     var onValueChanged: ((String?) -> Void)? = nil
     var validation: ((String) -> String?)? = nil
+    
+    @ViewBuilder var trailingContent: () -> TrailingContent
+    
     @State private var validationMessage: String? = nil
     @FocusState private var isInputFocused: Bool
+    
+    init(
+        title: String,
+        subtitle: String? = nil,
+        placeholder: String,
+        text: Binding<String>,
+        isSecure: Bool = false,
+        keyboardType: UIKeyboardType = .default,
+        autocapitalization: UITextAutocapitalizationType = .none,
+        contentType: UITextContentType? = nil,
+        disableAutocorrection: Bool = false,
+        onValueChanged: ((String?) -> Void)? = nil,
+        validation: ((String) -> String?)? = nil
+    ) where TrailingContent == EmptyView {
+        self.init(
+            title: title,
+            subtitle: subtitle,
+            placeholder: placeholder,
+            text: text,
+            isSecure: isSecure,
+            keyboardType: keyboardType,
+            autocapitalization: autocapitalization,
+            contentType: contentType,
+            disableAutocorrection: disableAutocorrection,
+            onValueChanged: onValueChanged,
+            validation: validation,
+            trailingContent: { EmptyView() }
+        )
+    }
+    
+    init(
+        title: String,
+        subtitle: String? = nil,
+        placeholder: String,
+        text: Binding<String>,
+        isSecure: Bool = false,
+        keyboardType: UIKeyboardType = .default,
+        autocapitalization: UITextAutocapitalizationType = .none,
+        contentType: UITextContentType? = nil,
+        disableAutocorrection: Bool = false,
+        onValueChanged: ((String?) -> Void)? = nil,
+        validation: ((String) -> String?)? = nil,
+        @ViewBuilder trailingContent: @escaping () -> TrailingContent
+    ) {
+        self.title = title
+        self.subtitle = subtitle
+        self.placeholder = placeholder
+        self._text = text
+        self.isSecure = isSecure
+        self.keyboardType = keyboardType
+        self.autocapitalization = autocapitalization
+        self.contentType = contentType
+        self.disableAutocorrection = disableAutocorrection
+        self.onValueChanged = onValueChanged
+        self.validation = validation
+        self.trailingContent = trailingContent
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: .xs) {
@@ -43,12 +104,16 @@ struct InputView: View {
                         TextField(placeholder, text: $text, prompt: Text(placeholder).foregroundColor(.content.neutralLow))
                     }
                 }
+                .textContentType(contentType)
                 .foregroundColor(.content.neutralHigh)
                 .keyboardType(keyboardType)
                 .autocapitalization(autocapitalization)
                 .disableAutocorrection(disableAutocorrection)
                 .fontStyle(.bodyM)
                 .focused($isInputFocused)
+                
+                trailingContent()
+                    .foregroundColor(.content.neutralLow)
             }
             .padding(.s)
             .frame(height: 48)
@@ -84,7 +149,7 @@ struct InputView: View {
                 validationMessage = validation(newValue)
             }
             
-            // Not in task, but think it's important to have ability to tell user what is exactly wrong
+            // Not in task, but I think it's important to have ability to tell user what is exactly wrong
             if displayError, let validationMessage {
                 Text(validationMessage)
                     .font(.caption)
